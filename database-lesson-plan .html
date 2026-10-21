@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Plan - CSF3123 Database (Semester 1 2026/2027)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Corporate & Highly Legible Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        umt: {
+                            navy: '#0F2C59',
+                            blue: '#1E3A8A',
+                            accent: '#0284C7',
+                            slate: '#334155',
+                            gold: '#D97706',
+                            lightBg: '#F8FAFC',
+                            border: '#E2E8F0'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1E293B;
+            background-color: #F8FAFC;
+            letter-spacing: -0.011em;
+        }
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: -0.02em;
+        }
+        
+        /* Corporate active week spotlight */
+        .active-week-row {
+            background-color: #F0F9FF !important;
+            box-shadow: inset 4px 0 0 0 #0284C7;
+        }
+        
+        /* Official Table styling for crisp reading */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .table-header-cell {
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        /* Custom print and embed scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 antialiased">
+
+    <!-- Top Corporate Header / Banner -->
+    <header class="bg-umt-navy text-white shadow-md border-b-4 border-amber-500 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                
+                <!-- Left Branding -->
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white px-3 py-2 rounded-md shadow-sm border border-slate-200 flex items-center justify-center">
+                        <span class="text-xl font-extrabold text-umt-navy tracking-tight font-heading">UMT</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-bold uppercase tracking-wider bg-blue-900/80 text-blue-200 px-2.5 py-0.5 rounded border border-blue-700/50">
+                                SEMESTER 1 SESSION 2026/2027
+                            </span>
+                            <span class="text-[11px] font-semibold text-slate-300">FACULTY OF COMPUTER SCIENCE AND MATHEMATICS</span>
+                        </div>
+                        <h1 class="text-xl sm:text-2xl font-bold mt-1 text-white tracking-tight">CSF3123 — DATABASE</h1>
+                        <p class="text-xs text-slate-300 font-medium">TEACHING PLAN & COURSE OUTLINE</p>
+                    </div>
+                </div>
+
+                <!-- Right Date & Simulator Widget -->
+                <div class="bg-slate-900/80 rounded-lg p-3 border border-slate-700/60 text-xs w-full md:w-auto">
+                    <div class="flex items-center justify-between md:justify-end gap-3 mb-2">
+                        <span class="text-slate-400 font-medium"><i class="fa-regular fa-calendar-check mr-1 text-sky-400"></i> Current Date:</span>
+                        <span id="currentDateDisplay" class="font-bold text-white bg-blue-900 px-2 py-0.5 rounded border border-blue-700">Loading...</span>
+                    </div>
+                    <div class="flex items-center justify-between md:justify-end gap-2 pt-2 border-t border-slate-800">
+                        <label for="dateOverride" class="text-slate-400 text-[11px] font-medium">Date Simulation:</label>
+                        <input type="date" id="dateOverride" class="bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-400">
+                        <button onclick="resetToToday()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-2 py-1 rounded text-[11px] transition">
+                            Reset Today
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+
+        <!-- Progress Tracker Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base font-heading flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-umt-accent"></i> Semester Academic Progress
+                    </h3>
+                    <p class="text-xs text-slate-500" id="progressSubtitle">Calculating study duration...</p>
+                </div>
+                <span id="progressPercentage" class="text-2xl font-extrabold text-umt-navy font-heading">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
+                <div id="progressBar" class="bg-gradient-to-r from-umt-navy to-sky-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div id="activeWeekBanner" class="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-md text-xs sm:text-sm flex items-center justify-between">
+                <!-- Dynamic active week details -->
+            </div>
+        </div>
+
+        <!-- Course Overview Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left 2 Columns: CLO & Weightage -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- CLO Table -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-100/90 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                        <h2 class="font-bold text-slate-900 text-sm font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-umt-navy"></i> Course Learning Outcomes (CLO)
+                        </h2>
+                        <span class="text-[11px] font-semibold bg-white border border-slate-300 text-slate-700 px-2.5 py-0.5 rounded">3 Credit Hours</span>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 table-header-cell">
+                                    <th class="py-2 px-3 w-16">CLO</th>
+                                    <th class="py-2 px-3">Course Learning Outcome Statement</th>
+                                    <th class="py-2 px-3 w-40">PLO Domain</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700 font-normal">
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-umt-navy">CLO1</td>
+                                    <td class="py-2.5 px-3 leading-relaxed">Apply appropriate methods and algorithms to solve database management problems. (C3, PLO2)</td>
+                                    <td class="py-2.5 px-3 font-medium"><span class="bg-slate-100 text-slate-800 border border-slate-200 px-2 py-0.5 rounded text-[11px]">PLO2 - Cognitive Skills</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-umt-navy">CLO2</td>
+                                    <td class="py-2.5 px-3 leading-relaxed">Build database systems using Database Management System (DBMS) and query languages to store, retrieve, and manipulate data effectively. (P4, PLO3)</td>
+                                    <td class="py-2.5 px-3 font-medium"><span class="bg-slate-100 text-slate-800 border border-slate-200 px-2 py-0.5 rounded text-[11px]">PLO3 - Practical Skills</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-umt-navy">CLO3</td>
+                                    <td class="py-2.5 px-3 leading-relaxed">Demonstrate effective verbal communication skills in oral presentation on database systems. (A3, PLO5)</td>
+                                    <td class="py-2.5 px-3 font-medium"><span class="bg-slate-100 text-slate-800 border border-slate-200 px-2 py-0.5 rounded text-[11px]">PLO5 - Communication Skills</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Weightage Overview -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+                    <h2 class="font-bold text-slate-900 text-sm font-heading flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-calculator text-umt-navy"></i> Course Assessments & Weightage
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <span class="text-[11px] text-slate-500 font-medium block">Practical Test</span>
+                            <span class="text-base font-bold text-slate-800 font-heading">10%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <span class="text-[11px] text-slate-500 font-medium block">Mid Semester Exam</span>
+                            <span class="text-base font-bold text-slate-800 font-heading">15%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <span class="text-[11px] text-slate-500 font-medium block">Lab Report</span>
+                            <span class="text-base font-bold text-slate-800 font-heading">10%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <span class="text-[11px] text-slate-500 font-medium block">Project Report</span>
+                            <span class="text-base font-bold text-slate-800 font-heading">10%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <span class="text-[11px] text-slate-500 font-medium block">Project Presentation</span>
+                            <span class="text-base font-bold text-slate-800 font-heading">5%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <span class="text-[11px] text-slate-500 font-medium block">Quizzes</span>
+                            <span class="text-base font-bold text-slate-800 font-heading">10%</span>
+                        </div>
+                        <div class="bg-slate-900 text-white p-2.5 rounded border border-slate-800 col-span-2">
+                            <span class="text-[11px] text-slate-300 font-medium block">Final Examination</span>
+                            <span class="text-lg font-bold text-amber-400 font-heading">40%</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Lecturers & Schedule -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-100/90 px-4 py-3 border-b border-slate-200">
+                        <h2 class="font-bold text-slate-900 text-sm font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-user-tie text-umt-navy"></i> Teaching Staff & Class Schedule
+                        </h2>
+                    </div>
+                    <div class="p-3.5 space-y-2.5 text-xs">
+                        
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-umt-navy font-heading">Group K1</span>
+                                <span class="text-slate-700 font-medium">Waheed Ali Hussein M. Ghanem</span>
+                            </div>
+                            <p class="text-slate-600 text-[11px] leading-relaxed">
+                                <strong>Sunday:</strong> 4.00-6.00 pm (DK2-03)<br>
+                                <strong>Thursday:</strong> 10.00 am-1.00 pm (Lab MP1)
+                            </p>
+                        </div>
+
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-umt-navy font-heading">Group K2</span>
+                                <span class="text-slate-700 font-medium">Mohd Aizal Sharil Bin Mat Rifin</span>
+                            </div>
+                            <p class="text-slate-600 text-[11px] leading-relaxed">
+                                <strong>Monday:</strong> 4.00-6.00 pm (MESB)<br>
+                                <strong>Thursday:</strong> 10.00 am-1.00 pm (Lab CISCO)
+                            </p>
+                        </div>
+
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-umt-navy font-heading">Group K3</span>
+                                <span class="text-slate-700 font-medium">Fakhrul Auli Bin Mohd Zaki</span>
+                            </div>
+                            <p class="text-slate-600 text-[11px] leading-relaxed">
+                                <strong>Sunday:</strong> 4.00-6.00 pm (BYOD1)<br>
+                                <strong>Thursday:</strong> 10.00 am-1.00 pm (Lab BYOD1)
+                            </p>
+                        </div>
+
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-umt-navy font-heading">Group K4</span>
+                                <span class="text-slate-700 font-medium">Hasnah Binti Nawawi</span>
+                            </div>
+                            <p class="text-slate-600 text-[11px] leading-relaxed">
+                                <strong>Sunday:</strong> 4.00-6.00 pm (BYOD2)<br>
+                                <strong>Thursday:</strong> 10.00 am-1.00 pm (Lab MP2)
+                            </p>
+                        </div>
+
+                        <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-umt-navy font-heading">Group K5</span>
+                                <span class="text-slate-700 font-medium">Faizah Binti Aplop</span>
+                            </div>
+                            <p class="text-slate-600 text-[11px] leading-relaxed">
+                                <strong>Monday:</strong> 4.00-6.00 pm (BK4-08)<br>
+                                <strong>Thursday:</strong> 10.00 am-1.00 pm (Lab MPIKK)
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Interactive Teaching Schedule Table -->
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+            
+            <!-- Table Action Controls Bar -->
+            <div class="p-4 bg-slate-900 text-white flex flex-col md:flex-row gap-3 justify-between items-center border-b border-slate-800">
+                <div>
+                    <h2 class="text-base font-bold font-heading flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-sky-400"></i> Weekly Teaching Schedule
+                    </h2>
+                    <p class="text-[11px] text-slate-400">Semester 1 (04 Oct 2026 – 06 Feb 2027)</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto">
+                    <div class="relative flex-1 sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="Search topic or lab session..." 
+                            class="w-full pl-8 pr-3 py-1.5 bg-slate-800 text-slate-100 text-xs rounded border border-slate-700 focus:outline-none focus:border-sky-400">
+                    </div>
+                    
+                    <select id="assessmentFilter" class="bg-slate-800 text-slate-100 text-xs px-2.5 py-1.5 rounded border border-slate-700 focus:outline-none focus:border-sky-400">
+                        <option value="ALL">All Weeks</option>
+                        <option value="LAB">Lab / Practical</option>
+                        <option value="QUIZ">Quizzes</option>
+                        <option value="TEST">Exams & Midterm</option>
+                        <option value="PROJECT">Project Work</option>
+                    </select>
+
+                    <button onclick="scrollToActiveWeek()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-3 py-1.5 rounded text-xs transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                        <i class="fa-solid fa-crosshairs"></i> Current Week
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 border-b border-slate-200 table-header-cell">
+                            <th class="py-3 px-3.5 w-32 border-r border-slate-200">Week & Date</th>
+                            <th class="py-3 px-3.5 border-r border-slate-200">Topic / Teaching Module</th>
+                            <th class="py-3 px-3.5 w-20 text-center border-r border-slate-200">CLO</th>
+                            <th class="py-3 px-3.5 w-44 border-r border-slate-200">T&L Activities</th>
+                            <th class="py-3 px-3.5 w-40 border-r border-slate-200">Assessments</th>
+                            <th class="py-3 px-3.5">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody" class="divide-y divide-slate-200">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer Legend -->
+            <div class="p-3 bg-slate-50 border-t border-slate-200 text-[11px] text-slate-600 flex flex-wrap justify-between items-center gap-2">
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1.5 font-medium"><span class="w-3 h-3 bg-sky-100 border-l-2 border-sky-600 inline-block"></span> Current Active Week</span>
+                    <span class="flex items-center gap-1.5 font-medium"><span class="w-3 h-3 bg-amber-100 border border-amber-300 inline-block"></span> Public Holiday</span>
+                    <span class="flex items-center gap-1.5 font-medium"><span class="w-3 h-3 bg-blue-50 border border-blue-200 inline-block"></span> Examination / Revision</span>
+                </div>
+                <div class="text-slate-400">
+                    FCSM Academic Information System — UMT
+                </div>
+            </div>
+        </div>
+
+        <!-- Endorsement / Signatures -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-lg border border-slate-200 text-xs text-slate-700">
+            <div>
+                <p class="font-bold text-slate-900 font-heading">Prepared by:</p>
+                <div class="mt-8 border-b border-slate-300 w-64"></div>
+                <p class="mt-1 text-slate-500 italic">(Course Lecturers & Official Stamp)</p>
+                <p class="mt-0.5 text-slate-400 text-[11px]">Date: October 2026</p>
+            </div>
+            <div>
+                <p class="font-bold text-slate-900 font-heading">Endorsed by:</p>
+                <div class="mt-8 border-b border-slate-300 w-64"></div>
+                <p class="mt-1 text-slate-500 italic">(Course Coordinator / OBE Coordinator / Head of Programme)</p>
+                <p class="mt-0.5 text-slate-400 text-[11px]">Date: October 2026</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Full dataset extracted and translated into English
+        const teachingData = [
+            {
+                id: "w1",
+                week: "W1",
+                startDate: "2026-10-04",
+                endDate: "2026-10-08",
+                dateStr: "04 OCT – 08 OCT 2026",
+                topic: "Chapter 1: Introduction to Database",
+                clo: ["CLO1"],
+                activities: ["Lecture"],
+                assessments: [],
+                remarks: ""
+            },
+            {
+                id: "w2",
+                week: "W2",
+                startDate: "2026-10-11",
+                endDate: "2026-10-15",
+                dateStr: "11 OCT – 15 OCT 2026",
+                topic: "Chapter 1 (Part 2): Data Model",
+                clo: ["CLO1", "CLO3"],
+                activities: ["Lecture", "Project-based Learning (PBL)"],
+                assessments: [],
+                remarks: "Project Briefing & Initiation"
+            },
+            {
+                id: "w3",
+                week: "W3",
+                startDate: "2026-10-18",
+                endDate: "2026-10-22",
+                dateStr: "18 OCT – 22 OCT 2026",
+                topic: "Chapter 1 (Part 3): Relational Data Model",
+                clo: ["CLO1", "CLO2", "CLO3"],
+                activities: ["Lecture", "Practical", "Quiz"],
+                assessments: ["LAB REPORT", "QUIZ"],
+                remarks: "Lab 1: Introduction to Database<br>Quiz 1"
+            },
+            {
+                id: "w4",
+                week: "W4",
+                startDate: "2026-10-25",
+                endDate: "2026-10-29",
+                dateStr: "25 OCT – 29 OCT 2026",
+                topic: "Chapter 2: SQL - Data Definition",
+                clo: ["CLO1", "CLO2"],
+                activities: ["Lecture", "Practical"],
+                assessments: ["LAB REPORT"],
+                remarks: "Lab 2: SQL - Data Definition Language (DDL)"
+            },
+            {
+                id: "w5",
+                week: "W5",
+                startDate: "2026-11-01",
+                endDate: "2026-11-05",
+                dateStr: "01 NOV – 05 NOV 2026",
+                topic: "Chapter 3: SQL - Data Manipulation",
+                clo: ["CLO2", "CLO3"],
+                activities: ["Lecture", "Practical", "Project-based Learning (PBL)"],
+                assessments: ["LAB REPORT"],
+                remarks: "Lab 3: SQL - Data Manipulation Language (DML)"
+            },
+            {
+                id: "h1",
+                type: "holiday",
+                week: "HOLIDAY",
+                startDate: "2026-11-08",
+                endDate: "2026-11-08",
+                dateStr: "08 NOV 2026",
+                topic: "HOLIDAY (DEEPAVALI) — 08 NOV 2026",
+                clo: [],
+                activities: [],
+                assessments: [],
+                remarks: "Public Holiday"
+            },
+            {
+                id: "w6",
+                week: "W6",
+                startDate: "2026-11-08",
+                endDate: "2026-11-12",
+                dateStr: "08 NOV – 12 NOV 2026",
+                topic: "Chapter 4: Database Design - Entity Relationship Model (ERM)",
+                clo: ["CLO1", "CLO2"],
+                activities: ["Lecture", "Practical"],
+                assessments: ["LAB REPORT"],
+                remarks: "Lab 4: SQL - Advanced Data Definition Language"
+            },
+            {
+                id: "w7",
+                week: "W7",
+                startDate: "2026-11-15",
+                endDate: "2026-11-19",
+                dateStr: "15 NOV – 19 NOV 2026",
+                topic: "Chapter 5: Database Design - Enhanced Entity Relationship Model (EERM)",
+                clo: ["CLO1", "CLO2", "CLO3"],
+                activities: ["Lecture", "Practical", "Quiz"],
+                assessments: ["LAB REPORT", "QUIZ"],
+                remarks: "Lab 5: SQL - Data Manipulation Language (DML)<br>Quiz 2"
+            },
+            {
+                id: "w8",
+                week: "W8",
+                startDate: "2026-11-22",
+                endDate: "2026-11-26",
+                dateStr: "22 NOV – 26 NOV 2026",
+                topic: "Midterm Test (Lab Session)",
+                clo: ["CLO1", "CLO2"],
+                activities: ["Lecture", "Test", "Practical"],
+                assessments: ["TEST", "LAB REPORT"],
+                remarks: "Midterm Test - 15% (Chapter 1-4)<br>Lab 6: Normalization and Sub-query"
+            },
+            {
+                id: "w9",
+                week: "W9",
+                startDate: "2026-11-29",
+                endDate: "2026-12-03",
+                dateStr: "29 NOV – 03 DEC 2026",
+                topic: "Chapter 6: Database Design - Normalization",
+                clo: ["CLO1", "CLO2"],
+                activities: ["Lecture", "Practical"],
+                assessments: ["LAB REPORT"],
+                remarks: "Lab 7: Stored Procedure"
+            },
+            {
+                id: "w10",
+                week: "W10",
+                startDate: "2026-12-06",
+                endDate: "2026-12-10",
+                dateStr: "06 DEC – 10 DEC 2026",
+                topic: "Chapter 7: Stored Procedure",
+                clo: ["CLO1", "CLO2", "CLO3"],
+                activities: ["Lecture", "Practical", "Quiz"],
+                assessments: ["LAB REPORT", "QUIZ"],
+                remarks: "Lab 8: NoSQL Database (MongoDB)<br>Quiz 3"
+            },
+            {
+                id: "w11",
+                week: "W11",
+                startDate: "2026-12-13",
+                endDate: "2026-12-17",
+                dateStr: "13 DEC – 17 DEC 2026",
+                topic: "Chapter 8: NoSQL Database Management System",
+                clo: ["CLO1"],
+                activities: ["Lecture"],
+                assessments: [],
+                remarks: ""
+            },
+            {
+                id: "w12",
+                week: "W12",
+                startDate: "2026-12-20",
+                endDate: "2026-12-24",
+                dateStr: "20 DEC – 24 DEC 2026",
+                topic: "Chapter 9: Security and Administration",
+                clo: ["CLO1", "CLO3"],
+                activities: ["Lecture", "Project-based Learning (PBL)"],
+                assessments: [],
+                remarks: "Project Submission"
+            },
+            {
+                id: "w13",
+                week: "W13",
+                startDate: "2026-12-27",
+                endDate: "2026-12-31",
+                dateStr: "27 DEC – 31 DEC 2026",
+                topic: "Chapter 10: Transaction Management",
+                clo: ["CLO1", "CLO2"],
+                activities: ["Lecture", "Practical"],
+                assessments: ["PRACTICAL TEST"],
+                remarks: "Practical Lab Test - 10%"
+            },
+            {
+                id: "w14",
+                week: "W14",
+                startDate: "2027-01-01",
+                endDate: "2027-01-07",
+                dateStr: "01 JAN – 07 JAN 2027",
+                topic: "Group Project Presentation",
+                clo: ["CLO3"],
+                activities: ["Project-based Learning (PBL)", "Presentation"],
+                assessments: ["PROJECT REPORT", "PRESENTATION"],
+                remarks: "Project Report - 10%<br>Project Presentation - 5%"
+            },
+            {
+                id: "h2",
+                type: "holiday",
+                week: "HOLIDAY",
+                startDate: "2027-01-06",
+                endDate: "2027-01-06",
+                dateStr: "06 JAN 2027",
+                topic: "HOLIDAY (ISRAK MIKRAJ) — 06 JAN 2027",
+                clo: [],
+                activities: [],
+                assessments: [],
+                remarks: "Public Holiday"
+            },
+            {
+                id: "study",
+                type: "exam",
+                week: "STUDY WEEK",
+                startDate: "2027-01-08",
+                endDate: "2027-01-16",
+                dateStr: "08 JAN – 16 JAN 2027",
+                topic: "STUDY WEEK (REVISION PERIOD)",
+                clo: [],
+                activities: ["Revision & Exam Preparation"],
+                assessments: [],
+                remarks: "Study Week for Final Examination"
+            },
+            {
+                id: "w15",
+                type: "exam",
+                week: "W15",
+                startDate: "2027-01-17",
+                endDate: "2027-02-06",
+                dateStr: "17 JAN – 06 FEB 2027",
+                topic: "EXAMINATION WEEK (FINAL EXAMINATIONS)",
+                clo: ["CLO1", "CLO2"],
+                activities: ["Final Examination"],
+                assessments: ["FINAL EXAM (40%)"],
+                remarks: "Semester Final Examination Period"
+            }
+        ];
+
+        // System Date Management
+        const semesterStart = new Date("2026-10-04");
+        const semesterEnd = new Date("2027-02-06");
+        let currentDate = new Date();
+
+        function formatDateToISO(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const overrideInput = document.getElementById('dateOverride');
+            
+            // Set default preview date within semester duration if current real date falls outside
+            const now = new Date();
+            if (now < semesterStart || now > semesterEnd) {
+                currentDate = new Date("2026-10-18"); // Default W3
+            } else {
+                currentDate = now;
+            }
+
+            overrideInput.value = formatDateToISO(currentDate);
+
+            overrideInput.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    currentDate = new Date(e.target.value + "T00:00:00");
+                    renderAll();
+                }
+            });
+
+            document.getElementById('searchInput').addEventListener('input', renderTable);
+            document.getElementById('assessmentFilter').addEventListener('change', renderTable);
+
+            renderAll();
+        });
+
+        function resetToToday() {
+            currentDate = new Date();
+            document.getElementById('dateOverride').value = formatDateToISO(currentDate);
+            renderAll();
+        }
+
+        function renderAll() {
+            updateDateHeader();
+            updateProgressBar();
+            renderTable();
+        }
+
+        function updateDateHeader() {
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('currentDateDisplay').innerText = currentDate.toLocaleDateString('en-US', options);
+        }
+
+        function updateProgressBar() {
+            let activeItem = null;
+            const currentStr = formatDateToISO(currentDate);
+
+            for (let item of teachingData) {
+                if (currentStr >= item.startDate && currentStr <= item.endDate) {
+                    activeItem = item;
+                    break;
+                }
+            }
+
+            let percent = 0;
+            if (currentDate < semesterStart) {
+                percent = 0;
+            } else if (currentDate > semesterEnd) {
+                percent = 100;
+            } else {
+                const totalDuration = semesterEnd - semesterStart;
+                const elapsed = currentDate - semesterStart;
+                percent = Math.min(100, Math.max(0, Math.round((elapsed / totalDuration) * 100)));
+            }
+
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressPercentage').innerText = percent + '%';
+            document.getElementById('progressSubtitle').innerText = `Academic Duration: 04 Oct 2026 – 06 Feb 2027`;
+
+            const banner = document.getElementById('activeWeekBanner');
+            if (activeItem) {
+                banner.className = "mt-3 p-3 bg-sky-50 border border-sky-300 rounded-md text-xs sm:text-sm text-sky-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2";
+                banner.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="bg-sky-600 text-white font-extrabold text-[10px] px-2 py-0.5 rounded tracking-wider uppercase font-heading">
+                            CURRENT ACTIVE WEEK
+                        </span>
+                        <div>
+                            <strong class="font-heading text-slate-900">${activeItem.week}</strong> (${activeItem.dateStr})
+                            <span class="text-slate-700 ml-1 font-medium">— ${activeItem.topic}</span>
+                        </div>
+                    </div>
+                    <button onclick="scrollToActiveWeek()" class="text-[11px] bg-slate-900 hover:bg-slate-800 text-white font-semibold px-2.5 py-1 rounded transition whitespace-nowrap">
+                        Focus Row <i class="fa-solid fa-arrow-down ml-1"></i>
+                    </button>
+                `;
+            } else if (currentDate < semesterStart) {
+                banner.className = "mt-3 p-2.5 bg-slate-100 border border-slate-200 rounded-md text-xs text-slate-700";
+                banner.innerHTML = `<i class="fa-solid fa-circle-info text-slate-500 mr-1.5"></i> The academic semester has not started yet for the selected date. (Semester Start Date: 04 Oct 2026)`;
+            } else {
+                banner.className = "mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-md text-xs text-emerald-900";
+                banner.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> All academic sessions for Semester 1 Session 2026/2027 have concluded for the selected date.`;
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('scheduleTableBody');
+            tbody.innerHTML = '';
+
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterType = document.getElementById('assessmentFilter').value;
+            const currentStr = formatDateToISO(currentDate);
+
+            teachingData.forEach(item => {
+                let matchesSearch = item.topic.toLowerCase().includes(searchTerm) || 
+                                  item.remarks.toLowerCase().includes(searchTerm) ||
+                                  item.week.toLowerCase().includes(searchTerm);
+
+                let matchesFilter = true;
+                if (filterType === 'LAB') {
+                    matchesFilter = item.assessments.some(a => a.includes('LAB')) || item.remarks.toLowerCase().includes('lab');
+                } else if (filterType === 'QUIZ') {
+                    matchesFilter = item.assessments.some(a => a.includes('QUIZ'));
+                } else if (filterType === 'TEST') {
+                    matchesFilter = item.assessments.some(a => a.includes('TEST') || a.includes('EXAM'));
+                } else if (filterType === 'PROJECT') {
+                    matchesFilter = item.activities.some(act => act.includes('PBL') || act.includes('Presentation')) || item.remarks.toLowerCase().includes('project');
+                }
+
+                if (!matchesSearch || !matchesFilter) return;
+
+                const isActive = (currentStr >= item.startDate && currentStr <= item.endDate);
+
+                const tr = document.createElement('tr');
+                tr.id = `row-${item.id}`;
+                
+                // Corporate styling per row category
+                if (isActive) {
+                    tr.className = "active-week-row font-medium transition-all";
+                } else if (item.type === 'holiday') {
+                    tr.className = "bg-amber-50/60 hover:bg-amber-100/50 text-amber-900";
+                } else if (item.type === 'exam') {
+                    tr.className = "bg-blue-50/50 hover:bg-blue-100/40 text-slate-900";
+                } else {
+                    tr.className = "hover:bg-slate-50 text-slate-800 transition";
+                }
+
+                const cloBadges = item.clo.map(c => `<span class="bg-slate-100 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-slate-300">${c}</span>`).join(' ');
+
+                const assessmentBadges = item.assessments.map(a => {
+                    let style = "bg-slate-100 text-slate-700 border-slate-300";
+                    if (a.includes('QUIZ')) style = "bg-purple-50 text-purple-900 border-purple-200";
+                    if (a.includes('LAB')) style = "bg-emerald-50 text-emerald-900 border-emerald-200";
+                    if (a.includes('TEST') || a.includes('EXAM')) style = "bg-rose-50 text-rose-900 border-rose-200";
+                    if (a.includes('PROJECT')) style = "bg-amber-50 text-amber-900 border-amber-200";
+                    return `<span class="${style} border text-[10px] font-semibold px-2 py-0.5 rounded inline-block my-0.5">${a}</span>`;
+                }).join(' ');
+
+                const activitiesHtml = item.activities.map(act => `<span class="inline-block text-xs text-slate-700">• ${act}</span>`).join('<br>');
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3.5 font-bold align-top border-r border-slate-200">
+                        <div class="flex items-center gap-1.5">
+                            <span class="${isActive ? 'text-sky-700 font-extrabold font-heading text-sm' : 'text-slate-900 font-heading'}">${item.week}</span>
+                            ${isActive ? '<span class="bg-sky-600 text-white text-[9px] font-bold px-1.5 py-0.2 rounded uppercase font-heading">ACTIVE</span>' : ''}
+                        </div>
+                        <div class="text-[10px] font-medium text-slate-500 mt-0.5">${item.dateStr}</div>
+                    </td>
+                    <td class="py-3 px-3.5 align-top border-r border-slate-200">
+                        <div class="font-semibold text-slate-900 text-xs leading-snug">${item.topic}</div>
+                    </td>
+                    <td class="py-3 px-3.5 align-top text-center border-r border-slate-200">
+                        <div class="flex flex-wrap gap-1 justify-center">${cloBadges || '-'}</div>
+                    </td>
+                    <td class="py-3 px-3.5 align-top border-r border-slate-200">
+                        ${activitiesHtml || '-'}
+                    </td>
+                    <td class="py-3 px-3.5 align-top border-r border-slate-200">
+                        ${assessmentBadges || '-'}
+                    </td>
+                    <td class="py-3 px-3.5 align-top text-xs text-slate-600 leading-relaxed">
+                        ${item.remarks || '-'}
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            if (tbody.children.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-slate-400 font-medium">
+                            No matching teaching plan records found. Please adjust your search query or filters.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function scrollToActiveWeek() {
+            const currentStr = formatDateToISO(currentDate);
+            const activeItem = teachingData.find(item => currentStr >= item.startDate && currentStr <= item.endDate);
+
+            if (activeItem) {
+                const el = document.getElementById(`row-${activeItem.id}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('ring-2', 'ring-sky-500');
+                    setTimeout(() => el.classList.remove('ring-2', 'ring-sky-500'), 2000);
+                }
+            } else {
+                alert('The currently selected date is outside the active academic teaching weeks.');
+            }
+        }
+    </script>
+</body>
+</html>
+
